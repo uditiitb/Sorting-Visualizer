@@ -7,21 +7,35 @@ class Column{
         this.queue=[];
     }
 
-    moveTo(loc,frameCount=100){
-        for(let i=0;i<=frameCount;i++){
+    moveTo(loc,yoffset=1,frameCount=20){
+        for(let i=1;i<=frameCount;i++){
             const t=i/frameCount;
+            const u=Math.sin(t*Math.PI);
             this.queue.push({
                 x:lerp(this.x,loc.x,t),
-                y:lerp(this.y,loc.y,t)
+                y:lerp(this.y,loc.y,t)+u*this.width/2*yoffset
+            });
+        }
+    }
+
+    jumping(frameCount=20){
+        for(let i=1;i<=frameCount;i++){
+            const t=i/frameCount;
+            const u=Math.sin(t*Math.PI);
+            this.queue.push({
+                x:this.x,
+                y:this.y+u*this.width,
             });
         }
     }
 
     draw(ctx){
+        let changed=false;
         if(this.queue.length>0){
-            const {x,y}=this.queue.shift();
+            const {x,y}=this.queue.shift();  //shift=first element of queues
             this.x=x;
             this.y=y;
+            changed=true;
         }
         const left=this.x-this.width/2;
         const top = this.y - this.height;
@@ -37,5 +51,6 @@ class Column{
         // ctx.closePath();
         ctx.fill();
         ctx.stroke();
+        return changed;
     }
 }
